@@ -25,14 +25,18 @@ public class PersonController {
     @PostMapping
     public ResponseEntity<Person> createPerson(@RequestBody Person person) {
         Person personCreated = personRepository.save(person);
-        return new ResponseEntity<>(personCreated, HttpStatus.CREATED);
+
+        if (person.getName().length() > 2) {
+            return new ResponseEntity<>(personCreated, HttpStatus.CREATED);
+        } else throw new IllegalArgumentException("Name is too short");
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Person> getPersonById(@PathVariable Long id) {
         Optional<Person> person = personRepository.findById(id);
 
-        return person.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return person.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseThrow(() -> new PersonNotFoundException("Person not found"));
     }
 
     @PutMapping("/{id}")
@@ -47,7 +51,7 @@ public class PersonController {
             Person updatedPerson = personRepository.save(existingPerson);
             return new ResponseEntity<>(updatedPerson, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        throw new PersonNotFoundException("Person not found");
     }
 
     @DeleteMapping("/{id}")
@@ -58,6 +62,6 @@ public class PersonController {
             personRepository.delete(person.get());
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        throw new PersonNotFoundException("Person not found");
     }
 }
