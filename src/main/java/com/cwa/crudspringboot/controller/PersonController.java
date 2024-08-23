@@ -1,5 +1,7 @@
-package com.cwa.crudspringboot;
+package com.cwa.crudspringboot.controller;
 
+import com.cwa.crudspringboot.repository.PersonRepository;
+import com.cwa.crudspringboot.entity.Person;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
