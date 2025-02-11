@@ -1,103 +1,104 @@
 package com.cwa.crudspringboot.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TDDServiceTest {
 
-    private TDDService tddService;
+    private TDDService tddService = new TDDService();
 
-    @BeforeEach
-    void setUp() {
-        tddService = new TDDService();
+    @Test
+    void testCalculateFareBike() {
+        //Arrange
+        LocalDateTime inTime = LocalDateTime.now();
+        LocalDateTime outTime = LocalDateTime.now().plusHours(2);
+
+        //Act
+        double fare = tddService.calculateFare(inTime, outTime, TDDService.VehicleType.BIKE);
+
+        //Assert
+        assertEquals(3, fare);
     }
 
     @Test
-    void testGetAge() {
+    void testCalculateFareCar() {
         //Arrange
-        LocalDate birthdate = LocalDate.of(1995, 1, 1);
+        LocalDateTime inTime = LocalDateTime.now();
+        LocalDateTime outTime = LocalDateTime.now().plusHours(2);
 
         //Act
-        int age = tddService.getAge(birthdate);
+        double fare = tddService.calculateFare(inTime, outTime, TDDService.VehicleType.CAR);
 
         //Assert
-        assertEquals(29, age);
+        assertEquals(6, fare);
     }
 
     @Test
-    void testIsMinorShouldReturnTrue() {
+    void testCalculateFareTruck() {
         //Arrange
-        LocalDate birthdate = LocalDate.of(2010, 1, 1);
+        LocalDateTime inTime = LocalDateTime.now();
+        LocalDateTime outTime = LocalDateTime.now().plusHours(2);
 
         //Act
-        boolean isMinor = tddService.isMinor(birthdate);
+        double fare = tddService.calculateFare(inTime, outTime, TDDService.VehicleType.TRUCK);
 
         //Assert
-        assertTrue(isMinor);
+        assertEquals(10, fare);
     }
 
     @Test
-    void testIsMinorShouldReturnFalse() {
+    void testCalculateFareTruckUnder30minutes() {
         //Arrange
-        LocalDate birthdate = LocalDate.of(2000, 1, 1);
+        LocalDateTime inTime = LocalDateTime.now();
+        LocalDateTime outTime = LocalDateTime.now().plusMinutes(29);
 
         //Act
-        boolean isMinor = tddService.isMinor(birthdate);
+        double fare = tddService.calculateFare(inTime, outTime, TDDService.VehicleType.TRUCK);
 
         //Assert
-        assertFalse(isMinor);
+        assertEquals(0, fare);
     }
 
     @Test
-    void testFizz() {
+    void testCalculateFareTruckUpper30minutes() {
         //Arrange
-        int number = 33;
+        LocalDateTime inTime = LocalDateTime.now();
+        LocalDateTime outTime = LocalDateTime.now().plusMinutes(45);
 
         //Act
-        String result = tddService.fizzbuzz(number);
+        double fare = tddService.calculateFare(inTime, outTime, TDDService.VehicleType.TRUCK);
 
         //Assert
-        assertEquals("Fizz", result);
+        assertEquals(3.75, fare);
     }
 
     @Test
-    void testBuzz() {
+    void testCalculateFareBike12hoursDiscount() {
         //Arrange
-        int number = 100;
+        LocalDateTime inTime = LocalDateTime.now();
+        LocalDateTime outTime = LocalDateTime.now().plusHours(12);
 
         //Act
-        String result = tddService.fizzbuzz(number);
+        double fare = tddService.calculateFare(inTime, outTime, TDDService.VehicleType.BIKE);
 
         //Assert
-        assertEquals("Buzz", result);
+        assertEquals(17.1, fare);
     }
 
     @Test
-    void testFizzBuzz() {
+    void testCalculateFareCar24hoursDiscount() {
         //Arrange
-        int number = 15;
+        LocalDateTime inTime = LocalDateTime.now();
+        LocalDateTime outTime = LocalDateTime.now().plusHours(24);
 
         //Act
-        String result = tddService.fizzbuzz(number);
+        double fare = tddService.calculateFare(inTime, outTime, TDDService.VehicleType.CAR);
 
         //Assert
-        assertEquals("FizzBuzz", result);
-    }
-
-    @Test
-    void testFizzBuzzShouldReturnMessage() {
-        //Arrange
-        int number = 14;
-
-        //Act
-        String result = tddService.fizzbuzz(number);
-
-        //Assert
-        assertEquals("This number is neither Fizz nor Buzz nor FizzBuzz", result);
+        assertEquals(64.8, fare);
     }
   
 }

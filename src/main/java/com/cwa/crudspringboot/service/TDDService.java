@@ -1,28 +1,44 @@
 package com.cwa.crudspringboot.service;
 
-import java.time.LocalDate;
-import java.time.Period;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class TDDService {
 
-    public int getAge(LocalDate birthdate) {
-        return Period.between(birthdate, LocalDate.now()).getYears();
+    private static final double BIKE_RATE = 1.5;
+    private static final double CAR_RATE = 3;
+    private static final double TRUCK_RATE = 5;
+
+    public enum VehicleType {
+        BIKE, CAR, TRUCK
     }
 
-    public boolean isMinor(LocalDate birthdate) {
-        return getAge(birthdate) < 18;
-    }
+    /*
+     * Write a method to calculate fare for a parking slot
+     * according to in time, out time and vehicle type (BIKE, CAR, TRUCK)
+     * Each vehicle has its own rate: BIKE -> 1.5€/h, CAR -> 3€/h, TRUCK -> 5€/h
+     * The first 30 minutes are free for all vehicles
+     * After 12 hours, a discount of 5% should be applied
+     * After 24 hours, a discount of 10% should be applied
+     */
+    public double calculateFare(LocalDateTime inTime, LocalDateTime outTime, VehicleType vehicleType) {
+        double duration = inTime.until(outTime, ChronoUnit.MINUTES);
 
-    public String fizzbuzz(int number) {
-        if (number % 3 == 0 && number % 5 == 0) {
-            return "FizzBuzz";
+        if (duration <= 30) return 0;
+
+        double fare = switch (vehicleType) {
+            case BIKE -> (duration * BIKE_RATE) / 60;
+            case CAR -> (duration * CAR_RATE) / 60;
+            case TRUCK -> (duration * TRUCK_RATE) / 60;
+        };
+
+        if (duration >= 720 && duration < 1440) {
+            return fare - (fare * 0.05);
         }
-        if (number % 3 == 0) {
-            return "Fizz";
+
+        if (duration >= 1440) {
+            return fare - (fare * 0.1);
         }
-        if (number % 5 == 0) {
-            return "Buzz";
-        }
-        return "This number is neither Fizz nor Buzz nor FizzBuzz";
+        return fare;
     }
 }
